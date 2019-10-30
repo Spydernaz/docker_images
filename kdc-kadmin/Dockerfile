@@ -14,4 +14,7 @@ COPY kadm5.acl /var/kerberos/krb5kdc/kadm5.acl
 ENV MASTER_PASSWORD=MASTER_PASSWORD
 
 COPY init-script.sh /tmp/
+
+RUN chmod 777 /tmp/init-script.sh
+
 CMD /tmp/init-script.sh
