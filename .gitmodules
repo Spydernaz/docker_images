@@ -1,8 +1,0 @@
-[submodule "apache-atlas/atlas"]
-	path = apache-atlas/atlas
-	url = https://github.com/apache/atlas
-	branch = master
-[submodule "apache-ranger/ranger"]
-	path = apache-ranger/ranger
-	url = https://github.com/apache/ranger
-	branch = master
