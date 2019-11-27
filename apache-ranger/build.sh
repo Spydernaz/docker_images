@@ -12,6 +12,6 @@ mvn eclipse:eclipse
 
 echo "Copying binaries"
 rm -rf ../binaries/*
-cp target/ranger-2.0.1-SNAPSHOT-tagsync.tar.gz ../binaries
-cp target/ranger-2.0.1-SNAPSHOT-usersync.tar.gz ../binaries
-cp target/ranger-2.0.1-SNAPSHOT-admin.tar.gz ../binaries
+cp target/ranger-2.1.0-SNAPSHOT-tagsync.tar.gz ../binaries
+cp target/ranger-2.1.0-SNAPSHOT-usersync.tar.gz ../binaries
+cp target/ranger-2.1.0-SNAPSHOT-admin.tar.gz ../binaries
