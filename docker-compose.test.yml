@@ -1,0 +1,18 @@
+version: "3"
+services:
+    atlas:
+        image: a16b542e33b8
+        ports:
+            - 21000:21000
+        depends_on: 
+            - cassandra
+    cassandra:
+        image: cassandra
+        environment: 
+            - LOCAL_JMX=no
+            - CASSANDRA_START_RPC=true
+
+
+
+
+

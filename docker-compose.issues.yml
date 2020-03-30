@@ -1,0 +1,39 @@
+version: "3"
+services:
+    ranger-db:
+        image: spydernaz/apache-ranger-admin-db:latest
+        restart: always
+        environment:
+            - MYSQL_ROOT_PASSWORD=password
+        depends_on:
+            - "atlas"
+    apache-ranger:
+        image: 52c9dc136c42
+        stdin_open: true
+        tty: true
+        depends_on:
+            - "ranger-db"
+        ports:
+            - "6080:6080"
+    atlas:
+        image: fa27fdfb7414
+        ports:
+            - 21000:21000
+    zookeeper:
+        image: 'confluentinc/cp-zookeeper:5.0.0'
+        environment:
+            - ZOOKEEPER_CLIENT_PORT=2181
+            - ALLOW_ANONYMOUS_LOGIN=yes
+    kafka:
+        image: 'confluentinc/cp-kafka:5.0.0'
+        environment:
+            - KAFKA_ZOOKEEPER_CONNECT=zookeeper:2181
+            - KAFKA_ADVERTISED_LISTENERS=PLAINTEXT://:9092
+            - KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR=1
+            - KAFKA_CFG_ZOOKEEPER_CONNECT=zookeeper:2181
+            - ALLOW_PLAINTEXT_LISTENER=yes
+        depends_on:
+            - zookeeper
+
+
+
