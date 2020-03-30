@@ -4,10 +4,10 @@ echo "Builing a new instance of Apache Ranger"
 cd ranger
 
 echo "Pulling updated code"
-git submodule update --recursive --remote
+# git submodule update --recursive --remote
 
 echo "Building from source"
-mvn clean compile install package -DskipJSTests -DskipTests assembly:assembly
+mvn clean package -DskipJSTests -DskipTests assembly:assembly
 mvn eclipse:eclipse
 
 echo "Copying binaries"
