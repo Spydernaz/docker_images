@@ -10,6 +10,13 @@ This image has a dependance on the mysql backend running and reachable. The easi
 docker-compose -f docker-compose.ranger.yml
 ```
 
+If you want to deploy it on your host network or without a compose file, you will still need the db. Run the following commands to test:
+
+```sh
+docker run -d --network=host --name=ranger-db -e MYSQL_ROOT_PASSWORD=password spydernaz/apache-ranger-admin-db:latest
+docker run -d --network=host --name=ranger-admin spydernaz/apache-ranger-admin:latest
+```
+
 ## Building the image locally ##
 
 If you want to try and rebuild this image locally for a different version of Ranger etc. then you can follow the instructions below:
