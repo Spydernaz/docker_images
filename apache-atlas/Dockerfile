@@ -13,11 +13,8 @@
 FROM centos:7
 
 RUN yum update -y \
-	&& yum install -y python python37 java-1.11.0-openjdk java-1.11.0-openjdk-devel net-tools maven git dumb-init\
+	&& yum install -y python python37 java-11-openjdk-devel net-tools maven git \
 	&& yum clean all
-
-RUN groupadd hadoop && \
-	useradd -m -d /opt/atlas -g hadoop atlas
 
 COPY ./binaries/* /atlas/
 
@@ -39,11 +36,6 @@ RUN mv /atlas/conf/cassandra.yml.template /atlas/conf/cassandra.yml \
     && sed -i 's/localhost/cassandra/g' /atlas/conf/cassandra.yml \
     && sed -i 's/rpc_address: localhost/rpc_address: cassandra/g' /atlas/conf/cassandra.yml
 
-RUN sed -i 's/atlas.graph.index.search.backend=solr/atlas.graph.index.search.backend=none/g' conf/atlas-application.properties
 
-
-# USER atlas
-
-# ENTRYPOINT ["/usr/bin/dumb-init", "--"]
 CMD ["/bin/bash", "-c", "/atlas/bin/atlas_start.py & tail -fF /atlas/logs/application.log"] 
 EXPOSE 21000

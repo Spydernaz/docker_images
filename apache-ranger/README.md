@@ -2,14 +2,32 @@
 
 This build is attempting to build a ranger container with TagSync running in a kerberized environment
 
-## Updating the Image ##
+## Running the Image ##
 
-If there is an update in `./ranger` then run follow the commands below to rebuild a new image (Note: This will take a __*LONG*__ time)
+This image has a dependance on the mysql backend running and reachable. The easiest way to get Ranger running is by using a compose file. You will find one in the root directory of this repo called `docker-compose.ranger.yml` and can build it by running the following command:
 
-You can also change the branch source from the **ranger** submodule configured in `../.gitmodules`
+```sh
+docker-compose -f docker-compose.ranger.yml
+```
 
-1. `./build.sh` - This might take a while
-2. `git add . && git commit -m "updated the Ranger source code/image"`
-3. `git push`
+If you want to deploy it on your host network or without a compose file, you will still need the db. Run the following commands to test:
 
-Wait for dockerhub to build the new image or build it manually by running `docker build .`
+```sh
+docker run -d --network=host --name=ranger-db -e MYSQL_ROOT_PASSWORD=password spydernaz/apache-ranger-admin-db:latest
+docker run -d --network=host --name=ranger-admin spydernaz/apache-ranger-admin:latest
+```
+
+## Building the image locally ##
+
+If you want to try and rebuild this image locally for a different version of Ranger etc. then you can follow the instructions below:
+
+__Note__: Running the commands below to rebuild a new image will take a __*LONG*__ time
+
+1. Update the branch in `./../.gitsubmodules` and refresh the submodules by running `git submodule update --recursive --remote`
+2. Make a new directory "binaries". As the binaries can be quite large we dont want to store the compiled version in git and there is a `.gitignore` entry for the binaries file
+`mkdir binaries`
+3. Run `./build.sh` - This might take a while as it will be building Ranger from the source code
+4. Update the version in Dockerfile.local to the version of ranger binaries you have (Careful as this might look like 2.1.0-SNAPSHOT or it could be 2.0)
+5. Run `docker build . -f Dockerfile.local`
+
+You should now have a new ImageID for the dockerfile. Update the docker-compose file with the new ImageID to test

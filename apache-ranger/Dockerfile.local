@@ -12,9 +12,9 @@ RUN yum install -y java-11-openjdk-devel python2 curl vim sudo mysql-connector-j
 
 RUN ln -sf /usr/bin/python2 /usr/local/bin/python
 
-RUN curl -L https://github.com/Spydernaz/docker_images/releases/download/ranger-{$VERSION}/ranger-{$VERSION}-admin.tar.gz -o /ranger-${VERSION}-admin.tar.gz \
-	&& curl -L https://github.com/Spydernaz/docker_images/releases/download/ranger-{$VERSION}/ranger-{$VERSION}-tagsync.tar.gz -o /ranger-${VERSION}-tagsync.tar.gz \
-	&& curl -L https://github.com/Spydernaz/docker_images/releases/download/ranger-{$VERSION}/ranger-{$VERSION}-usersync.tar.gz -o /ranger-${VERSION}-usersync.tar.gz
+COPY binaries/ranger-${VERSION}-admin.tar.gz /
+COPY binaries/ranger-${VERSION}-tagsync.tar.gz /
+COPY binaries/ranger-${VERSION}-usersync.tar.gz /
 
 RUN cd /opt && mkdir ranger && cd ranger \
 	&& mkdir ranger-admin ranger-tagsync ranger-usersync \
