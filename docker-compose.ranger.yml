@@ -1,0 +1,18 @@
+version: "3"
+services:
+    ranger-db:
+        image: spydernaz/apache-ranger-admin-db:latest
+        restart: always
+        environment:
+            - MYSQL_ROOT_PASSWORD=password
+        # depends_on:
+        #     - "atlas"
+    apache-ranger:
+        image: spydernaz/apache-ranger-admin:latest
+        stdin_open: true
+        tty: true
+        depends_on:
+            - "ranger-db"
+        ports:
+            - "6080:6080"
+
