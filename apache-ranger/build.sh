@@ -3,9 +3,6 @@ echo "Builing a new instance of Apache Ranger"
 # echo "going into ranger directory"
 cd ranger
 
-echo "Pulling updated code"
-# git submodule update --recursive --remote
-
 echo "Building from source"
 mvn clean package -DskipJSTests -DskipTests assembly:assembly
 mvn eclipse:eclipse

@@ -43,21 +43,21 @@ sed -i 's|keyadmin_password=|keyadmin_password=password1|' install.properties
 $RANGER_ADMIN_HOME/setup.sh
 
 
-#---------------------------------------
-#
-#       Configure TagSync Service
-#
-#---------------------------------------
-cd $RANGER_TAGSYNC_HOME
-echo -e "\n\n\n    ****    Configuring and installing Ranger TagSync    ****\n\n\n"
+# #---------------------------------------
+# #
+# #       Configure TagSync Service
+# #
+# #---------------------------------------
+# cd $RANGER_TAGSYNC_HOME
+# echo -e "\n\n\n    ****    Configuring and installing Ranger TagSync    ****\n\n\n"
 
-# Configure TagSync to poll Atlas API
-# sed -i 's|TAG_SOURCE_ATLAS_ENABLED = true|TAG_SOURCE_ATLAS_ENABLED = false|' install.properties
-# sed -i 's|TAG_SOURCE_ATLASREST_ENABLED = false|TAG_SOURCE_ATLASREST_ENABLED = true|' install.properties
-sed -i 's|TAG_SOURCE_ATLAS_KAFKA_BOOTSTRAP_SERVERS = localhost:6667|TAG_SOURCE_ATLAS_KAFKA_BOOTSTRAP_SERVERS = kafka:9092|' install.properties
-sed -i 's|TAG_SOURCE_ATLAS_KAFKA_ZOOKEEPER_CONNECT = localhost:2181|TAG_SOURCE_ATLAS_KAFKA_ZOOKEEPER_CONNECT = zookeeper:2181|' install.properties
+# # Configure TagSync to poll Atlas API
+# # sed -i 's|TAG_SOURCE_ATLAS_ENABLED = true|TAG_SOURCE_ATLAS_ENABLED = false|' install.properties
+# # sed -i 's|TAG_SOURCE_ATLASREST_ENABLED = false|TAG_SOURCE_ATLASREST_ENABLED = true|' install.properties
+# sed -i 's|TAG_SOURCE_ATLAS_KAFKA_BOOTSTRAP_SERVERS = localhost:6667|TAG_SOURCE_ATLAS_KAFKA_BOOTSTRAP_SERVERS = kafka:9092|' install.properties
+# sed -i 's|TAG_SOURCE_ATLAS_KAFKA_ZOOKEEPER_CONNECT = localhost:2181|TAG_SOURCE_ATLAS_KAFKA_ZOOKEEPER_CONNECT = zookeeper:2181|' install.properties
 
-$RANGER_TAGSYNC_HOME/setup.sh
+# $RANGER_TAGSYNC_HOME/setup.sh
 
 
 #---------------------------------------
@@ -65,11 +65,12 @@ $RANGER_TAGSYNC_HOME/setup.sh
 #---------------------------------------
 PATH=$PATH:$RANGER_TAGSYNC_HOME:$RANGER_ADMIN_HOME
 ranger-admin start
-ranger-tagsync start
+# ranger-tagsync start
 
 
 #---------------------------------------
 #       Keep the container running
 #---------------------------------------
-tail -f $RANGER_ADMIN_HOME/logfile $RANGER_TAGSYNC_HOME/log/tagsync.*
+# tail -f $RANGER_ADMIN_HOME/logfile $RANGER_TAGSYNC_HOME/log/tagsync.*
+tail -f $RANGER_ADMIN_HOME/logfile
 
