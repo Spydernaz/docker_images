@@ -8,7 +8,7 @@ services:
         # depends_on:
         #     - "atlas"
     apache-ranger:
-        image: 5178d3bfc5f4
+        image: spydernaz/apache-ranger-admin:experimental
         stdin_open: true
         tty: true
         depends_on:

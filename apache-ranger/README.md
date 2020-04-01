@@ -17,6 +17,10 @@ docker run -d --network=host --name=ranger-db -e MYSQL_ROOT_PASSWORD=password sp
 docker run -d --network=host --name=ranger-admin spydernaz/apache-ranger-admin:latest
 ```
 
+## Accessing the UI ##
+
+To access the image, go to a browser and go to the [UI](http://localhost:6080). The default port for Ranger is 6080 and will be running on your localhost. To log in use the super secure username / password combination `admin`/`password1`
+
 ## Building the image locally ##
 
 If you want to try and rebuild this image locally for a different version of Ranger etc. then you can follow the instructions below:
