@@ -30,7 +30,9 @@ sed -i 's|atlas.graph.index.search.solr.zookeeper-url=localhost:2181|atlas.graph
 
 # Configure Solr Collections
 # curl 'http://localhost:8983/solr/admin/collections?action=CREATE&name=gettingstarted3&numShards=1&collection.configName=_default'
-
+curl 'http://solr3:8983/solr/admin/collections?action=CREATE&name=vertex_index&numShards=1'
+curl 'http://solr3:8983/solr/admin/collections?action=CREATE&name=edge_index&numShards=1'
+curl 'http://solr3:8983/solr/admin/collections?action=CREATE&name=fulltext_index&numShards=1'
 
 
 #---------------------------------------

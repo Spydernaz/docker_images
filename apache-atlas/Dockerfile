@@ -11,7 +11,7 @@ RUN yum install -y java-11-openjdk-devel python2 curl vim bc nc && \
 
 RUN ln -sf /usr/bin/python2 /usr/local/bin/python
 
-COPY https://github.com/Spydernaz/docker_images/releases/download/atlas-${VERSION}/apache-atlas-${VERSION}-server.tar.gz /apache-atlas-${VERSION}-server.tar.gz
+RUN curl -L https://github.com/Spydernaz/docker_images/releases/download/atlas-${VERSION}/apache-atlas-${VERSION}-server.tar.gz -o /apache-atlas-${VERSION}-server.tar.gz
 
 RUN cd /opt && mkdir atlas && cd atlas \
 	&& mkdir atlas-server \
