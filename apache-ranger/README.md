@@ -7,7 +7,7 @@ This build is attempting to build a ranger container with TagSync running in a k
 This image has a dependance on the mysql backend running and reachable. The easiest way to get Ranger running is by using a compose file. You will find one in the root directory of this repo called `docker-compose.ranger.yml` and can build it by running the following command:
 
 ```sh
-docker-compose -f docker-compose.ranger.yml
+docker-compose -f docker-compose.ranger.yml up
 ```
 
 If you want to deploy it on your host network or without a compose file, you will still need the db. Run the following commands to test:

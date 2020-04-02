@@ -40,3 +40,10 @@ services:
         environment:
             - ZOO_MY_ID=1
             - ZOO_SERVERS=server.1=0.0.0.0:2888:3888;2181
+
+    atlas:
+        image: 5b2973b00d43
+        container_name: atlas-server
+        restart: always
+        ports:
+            - 21000:21000
