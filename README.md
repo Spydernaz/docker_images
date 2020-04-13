@@ -11,6 +11,14 @@ I use Linux / Mac and do not have an Windows Enterprise or Pro license and there
 
 Each image should have it's own documentation in the file directory of the image. I try my best to keep these images updated however if there is something missing or not working feel free to raise an issue and I will try to help you out when I can.
 
+| Image Name | Version | Status |
+| ---------- |:-------:|:------:|
+| Apache Ranger | master | Passing |
+| Apache Ranger | experimental | Failing |
+| Apache Atlas | master | Failing |
+| Apache Atlas | experimental | Passing |
+| Kerberos Base | master | Passing |
+
 ## Compose Files ##
 
 There are also a number of docker-compose files here. These are for my testing unless specified otherwise and may contain local ImageIDs and therefore not work on your machine.

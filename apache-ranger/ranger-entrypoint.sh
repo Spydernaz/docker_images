@@ -68,8 +68,8 @@ echo -e "\n\n\n    ****    Configuring and installing Ranger TagSync    ****\n\n
 # # Configure TagSync to poll Atlas API
 # sed -i 's|TAG_SOURCE_ATLAS_ENABLED = true|TAG_SOURCE_ATLAS_ENABLED = false|' install.properties
 # sed -i 's|TAG_SOURCE_ATLASREST_ENABLED = false|TAG_SOURCE_ATLASREST_ENABLED = true|' install.properties
-sed -i 's|TAG_SOURCE_ATLAS_KAFKA_BOOTSTRAP_SERVERS = localhost:6667|TAG_SOURCE_ATLAS_KAFKA_BOOTSTRAP_SERVERS = kafka1:9092|' install.properties
-sed -i 's|TAG_SOURCE_ATLAS_KAFKA_ZOOKEEPER_CONNECT = localhost:2181|TAG_SOURCE_ATLAS_KAFKA_ZOOKEEPER_CONNECT = zoo1:2181|' install.properties
+sed -i 's|TAG_SOURCE_ATLAS_KAFKA_BOOTSTRAP_SERVERS = localhost:6667|TAG_SOURCE_ATLAS_KAFKA_BOOTSTRAP_SERVERS = kafka1:19091,kafka2:19092,kafka3:19093|' install.properties
+sed -i 's|TAG_SOURCE_ATLAS_KAFKA_ZOOKEEPER_CONNECT = localhost:2181|TAG_SOURCE_ATLAS_KAFKA_ZOOKEEPER_CONNECT = zookeeper:2181|' install.properties
 
 $RANGER_TAGSYNC_HOME/setup.sh
 
