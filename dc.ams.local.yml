@@ -91,6 +91,13 @@ services:
         #     - ./zk-single-kafka-multiple/kafka3/data:/var/lib/kafka/data
         depends_on:
             - zoo1
+
+    atlas:
+        image: f8997061fa66
+        container_name: atlas-server
+        restart: always
+        ports:
+            - 21000:21000
     
     ranger-db:
         image: spydernaz/apache-ranger-admin-db:latest

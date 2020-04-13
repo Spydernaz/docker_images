@@ -1,14 +1,25 @@
 version: '3.7'
 services:
+    zookeeper:
+        image: zookeeper:3.5
+        container_name: zookeeper
+        restart: always
+        hostname: zookeeper
+        ports:
+            - 2181:2181
+        environment:
+            - ZOO_MY_ID=1
+            - ZOO_SERVERS=server.1=0.0.0.0:2888:3888;2181
+
     solr1:
         image: solr:8.3
         container_name: solr1
         ports:
             - "8981:8983"
         environment:
-            - ZK_HOST=zoo1:2181
+            - ZK_HOST=zookeeper:2181
         depends_on:
-            - zoo1
+            - zookeeper
 
     solr2:
         image: solr:8.3
@@ -16,9 +27,9 @@ services:
         ports:
             - "8982:8983"
         environment:
-            - ZK_HOST=zoo1:2181
+            - ZK_HOST=zookeeper:2181
         depends_on:
-            - zoo1
+            - zookeeper
 
     solr3:
         image: solr:8.3
@@ -26,24 +37,63 @@ services:
         ports:
             - "8983:8983"
         environment:
-            - ZK_HOST=zoo1:2181
+            - ZK_HOST=zookeeper:2181
         depends_on:
-        - zoo1
+        - zookeeper
 
-    zoo1:
-        image: zookeeper:3.5
-        container_name: zoo1
-        restart: always
-        hostname: zoo1
+    kafka1:
+        image: confluentinc/cp-kafka:5.4.1
+        hostname: kafka1
+        container_name: kafka1
         ports:
-            - 2181:2181
+            - "9091:9091"
         environment:
-            - ZOO_MY_ID=1
-            - ZOO_SERVERS=server.1=0.0.0.0:2888:3888;2181
+            KAFKA_LISTENERS: INTERNAL_PLAINTEXT://kafka1:19091
+            KAFKA_ADVERTISED_LISTENERS: INTERNAL_PLAINTEXT://kafka1:19091
+            KAFKA_LISTENER_SECURITY_PROTOCOL_MAP: INTERNAL_PLAINTEXT:PLAINTEXT
+            KAFKA_INTER_BROKER_LISTENER_NAME: INTERNAL_PLAINTEXT
+            KAFKA_ZOOKEEPER_CONNECT: "zookeeper:2181"
+            KAFKA_BROKER_ID: 1
+            KAFKA_LOG4J_LOGGERS: "kafka.controller=INFO,kafka.producer.async.DefaultEventHandler=INFO,state.change.logger=INFO"
+        depends_on:
+            - zookeeper
 
+    kafka2:
+        image: confluentinc/cp-kafka:5.4.1
+        hostname: kafka2
+        container_name: kafka2
+        ports:
+            - "9092:9092"
+        environment:
+            KAFKA_LISTENERS: INTERNAL_PLAINTEXT://kafka2:19092
+            KAFKA_ADVERTISED_LISTENERS: INTERNAL_PLAINTEXT://kafka2:19092
+            KAFKA_LISTENER_SECURITY_PROTOCOL_MAP: INTERNAL_PLAINTEXT:PLAINTEXT
+            KAFKA_INTER_BROKER_LISTENER_NAME: INTERNAL_PLAINTEXT
+            KAFKA_ZOOKEEPER_CONNECT: "zookeeper:2181"
+            KAFKA_BROKER_ID: 2
+            KAFKA_LOG4J_LOGGERS: "kafka.controller=INFO,kafka.producer.async.DefaultEventHandler=INFO,state.change.logger=INFO"
+        depends_on:
+            - zookeeper
+
+    kafka3:
+        image: confluentinc/cp-kafka:5.4.1
+        hostname: kafka3
+        container_name: kafka3
+        ports:
+            - "9093:9093"
+        environment:
+            KAFKA_LISTENERS: INTERNAL_PLAINTEXT://kafka3:19093
+            KAFKA_ADVERTISED_LISTENERS: INTERNAL_PLAINTEXT://kafka3:19093
+            KAFKA_LISTENER_SECURITY_PROTOCOL_MAP: INTERNAL_PLAINTEXT:PLAINTEXT
+            KAFKA_INTER_BROKER_LISTENER_NAME: INTERNAL_PLAINTEXT
+            KAFKA_ZOOKEEPER_CONNECT: "zookeeper:2181"
+            KAFKA_BROKER_ID: 3
+            KAFKA_LOG4J_LOGGERS: "kafka.controller=INFO,kafka.producer.async.DefaultEventHandler=INFO,state.change.logger=INFO"
+        depends_on:
+            - zookeeper
     atlas:
-        image: 5b2973b00d43
-        container_name: atlas-server
+        image: spydernaz/apache-atlas:experimental
+        container_name: atlas
         restart: always
         ports:
             - 21000:21000

@@ -53,8 +53,8 @@ services:
             KAFKA_ZOOKEEPER_CONNECT: "zoo1:2181"
             KAFKA_BROKER_ID: 1
             KAFKA_LOG4J_LOGGERS: "kafka.controller=INFO,kafka.producer.async.DefaultEventHandler=INFO,state.change.logger=INFO"
-        # volumes:
-        #     - ./zk-single-kafka-multiple/kafka1/data:/var/lib/kafka/data
+        volumes:
+            - ./zk-single-kafka-multiple/kafka1/data:/var/lib/kafka/data
         depends_on:
             - zoo1
 
@@ -70,8 +70,8 @@ services:
             KAFKA_ZOOKEEPER_CONNECT: "zoo1:2181"
             KAFKA_BROKER_ID: 2
             KAFKA_LOG4J_LOGGERS: "kafka.controller=INFO,kafka.producer.async.DefaultEventHandler=INFO,state.change.logger=INFO"
-        # volumes:
-        #     - ./zk-single-kafka-multiple/kafka2/data:/var/lib/kafka/data
+        volumes:
+            - ./zk-single-kafka-multiple/kafka2/data:/var/lib/kafka/data
         depends_on:
             - zoo1
 
@@ -87,10 +87,17 @@ services:
             KAFKA_ZOOKEEPER_CONNECT: "zoo1:2181"
             KAFKA_BROKER_ID: 3
             KAFKA_LOG4J_LOGGERS: "kafka.controller=INFO,kafka.producer.async.DefaultEventHandler=INFO,state.change.logger=INFO"
-        # volumes:
-        #     - ./zk-single-kafka-multiple/kafka3/data:/var/lib/kafka/data
+        volumes:
+            - ./zk-single-kafka-multiple/kafka3/data:/var/lib/kafka/data
         depends_on:
             - zoo1
+
+    atlas:
+        image: 5b2973b00d43
+        container_name: atlas-server
+        restart: always
+        ports:
+            - 21000:21000
     
     ranger-db:
         image: spydernaz/apache-ranger-admin-db:latest
@@ -99,7 +106,7 @@ services:
             - MYSQL_ROOT_PASSWORD=password
 
     apache-ranger:
-        image: 95f99e518b41
+        image: spydernaz/apache-ranger-admin:latest
         stdin_open: true
         tty: true
         depends_on:

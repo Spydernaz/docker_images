@@ -9,12 +9,6 @@ until $(curl --output /dev/null --silent --head --fail http://solr3:8983/solr); 
 # echo "Connected to SOLR instance"
 
 #---------------------------------------
-#       Create a SOLR Collection for Ranger
-#---------------------------------------
-# curl -u solr:SolrRocks "http://logging:8983/solr/admin/collections?action=CREATE&name=ranger_audits&numShards=1&replicationFactor=0&collection.configName=ranger_audits&maxShardsPerNode=100"
-
-
-#---------------------------------------
 #
 #       Configure Atlas Server
 #
@@ -23,16 +17,32 @@ cd $ATLAS_SERVER_HOME
 echo -e "\n\n\n    ****    Configuring and installing Atlas Server    ****\n\n\n"
 
 export MANAGE_LOCAL_HBASE=true
-export MANAGE_LOCAL_SOLR=true
+export MANAGE_LOCAL_SOLR=false
+
+# # Adjust Logging Level
+# sed -i 's|<level value="info"/>|<level value="debug"/>|' ./conf/atlas-log4j.xml
+# sed -i 's|<level value="error"/>|<level value="debug"/>|' ./conf/atlas-log4j.xml
+
+
+# Configure Kafka Settings
+echo -e "\n\n\n    ****    Configuring Kafka    ****\n\n\n"
+sed -i 's|atlas.notification.embedded=true|atlas.notification.embedded=false|' ./conf/atlas-application.properties
+sed -i 's|atlas.kafka.data=|#atlas.kafka.data=|' ./conf/atlas-application.properties
+sed -i 's|atlas.kafka.zookeeper.connect=localhost:9026|atlas.kafka.zookeeper.connect=zookeeper:2181|' ./conf/atlas-application.properties
+sed -i 's|atlas.kafka.bootstrap.servers=localhost:9027|atlas.kafka.bootstrap.servers=kafka1:19091,kafka2:19092,kafka3:19093|' ./conf/atlas-application.properties
+
+# Run the Kafka setup
+python ./bin/atlas_kafka_setup.py
 
 # Point logging section to Solr Container
-sed -i 's|atlas.graph.index.search.solr.zookeeper-url=localhost:2181|atlas.graph.index.search.solr.zookeeper-url=zoo1:2181|' ./conf/atlas-application.properties
+echo -e "\n\n\n    ****    Configuring SOLR    ****\n\n\n"
 
+sed -i 's|atlas.graph.index.search.solr.zookeeper-url=localhost:2181|atlas.graph.index.search.solr.zookeeper-url=zookeeper:2181|' ./conf/atlas-application.properties
 # Configure Solr Collections
 # curl 'http://localhost:8983/solr/admin/collections?action=CREATE&name=gettingstarted3&numShards=1&collection.configName=_default'
-curl 'http://solr3:8983/solr/admin/collections?action=CREATE&name=vertex_index&numShards=1'
-curl 'http://solr3:8983/solr/admin/collections?action=CREATE&name=edge_index&numShards=1'
-curl 'http://solr3:8983/solr/admin/collections?action=CREATE&name=fulltext_index&numShards=1'
+curl 'http://solr3:8983/solr/admin/collections?action=CREATE&name=vertex_index&numShards=3'
+curl 'http://solr3:8983/solr/admin/collections?action=CREATE&name=edge_index&numShards=3'
+curl 'http://solr3:8983/solr/admin/collections?action=CREATE&name=fulltext_index&numShards=3'
 
 
 #---------------------------------------
@@ -45,5 +55,5 @@ atlas_start.py
 #---------------------------------------
 #       Keep the container running
 #---------------------------------------
-tail -f $ATLAS_SERVER_HOME/logs/application.log
+tail -f $ATLAS_SERVER_HOME/logs/application.*
 

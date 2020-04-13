@@ -5,13 +5,8 @@
 #---------------------------------------
 until nc -z -v -w30 ranger-db 3306; do echo "Waiting for database connection..." && sleep 5; done
 echo "Connected to MySQL DB"
-# until $(curl --output /dev/null --silent --head --fail http://logging:8983); do echo "Waiting for SOLR" && sleep 5; done
-# echo "Connected to SOLR instance"
-
-#---------------------------------------
-#       Create a SOLR Collection for Ranger
-#---------------------------------------
-# curl -u solr:SolrRocks "http://logging:8983/solr/admin/collections?action=CREATE&name=ranger_audits&numShards=1&replicationFactor=0&collection.configName=ranger_audits&maxShardsPerNode=100"
+until $(curl --output /dev/null --silent --head --fail http://solr3:8983); do echo "Waiting for SOLR" && sleep 5; done
+echo "Solr now available"
 
 
 #---------------------------------------
@@ -23,10 +18,29 @@ cd $RANGER_ADMIN_HOME
 echo -e "\n\n\n    ****    Configuring and installing Ranger Admin    ****\n\n\n"
 
 # # Point logging section to Solr Container
-sed -i 's|audit_store=solr|audit_store=none|' install.properties
-# sed -i 's|audit_solr_urls=|audit_solr_urls=http://logging:8983/solr/ranger_audits|' install.properties
-# sed -i 's|audit_solr_user=|audit_solr_user=solr|' install.properties
-# sed -i 's|audit_solr_password=|audit_solr_password=SolrRocks|' install.properties
+# sed -i 's|audit_store=solr|audit_store=none|' install.properties
+sed -i 's|audit_solr_urls=|audit_solr_urls=http://solr3:8983/solr/ranger_audits|' install.properties
+sed -i 's|audit_solr_user=|audit_solr_user=solr|' install.properties
+sed -i 's|audit_solr_password=|audit_solr_password=NONE|' install.properties
+
+echo "Creating Solr Collection"
+curl "http://solr3:8983/solr/admin/collections?action=CREATE&name=ranger_audits&numShards=1"
+# curl --negotiate -u : "${SOLR_HOST_URL}/solr/admin/collections?action=CREATE&name=${COLLECTION_NAME}&numShards=${SHARDS}&replicationFactor=${REPLICATION}&collection.configName=$CONF_NAME&maxShardsPerNode=100"
+
+
+JAVA_HOME={{JAVA_HOME}}
+SOLR_USER={{SOLR_USER}}
+SOLR_ZK={{SOLR_ZK}}
+SOLR_INSTALL_DIR={{SOLR_INSTALL_DIR}}
+SOLR_RANGER_HOME={{SOLR_RANGER_HOME}}
+
+
+SOLR_RANGER_CONFIG_NAME=ranger_audits
+SOLR_RANGER_CONFIG_LOCAL_PATH=${SOLR_RANGER_HOME}/conf
+ZK_CLI=$SOLR_INSTALL_DIR/server/scripts/cloud-scripts/zkcli.sh
+
+$ZK_CLI -cmd upconfig -zkhost $SOLR_ZK -confname $SOLR_RANGER_CONFIG_NAME -confdir $SOLR_RANGER_CONFIG_LOCAL_PATH
+
 
 # Configure DB
 sed -i 's|db_root_password=|db_root_password=password|' install.properties
@@ -48,16 +62,16 @@ $RANGER_ADMIN_HOME/setup.sh
 # #       Configure TagSync Service
 # #
 # #---------------------------------------
-# cd $RANGER_TAGSYNC_HOME
-# echo -e "\n\n\n    ****    Configuring and installing Ranger TagSync    ****\n\n\n"
+cd $RANGER_TAGSYNC_HOME
+echo -e "\n\n\n    ****    Configuring and installing Ranger TagSync    ****\n\n\n"
 
 # # Configure TagSync to poll Atlas API
-# # sed -i 's|TAG_SOURCE_ATLAS_ENABLED = true|TAG_SOURCE_ATLAS_ENABLED = false|' install.properties
-# # sed -i 's|TAG_SOURCE_ATLASREST_ENABLED = false|TAG_SOURCE_ATLASREST_ENABLED = true|' install.properties
-# sed -i 's|TAG_SOURCE_ATLAS_KAFKA_BOOTSTRAP_SERVERS = localhost:6667|TAG_SOURCE_ATLAS_KAFKA_BOOTSTRAP_SERVERS = kafka:9092|' install.properties
-# sed -i 's|TAG_SOURCE_ATLAS_KAFKA_ZOOKEEPER_CONNECT = localhost:2181|TAG_SOURCE_ATLAS_KAFKA_ZOOKEEPER_CONNECT = zookeeper:2181|' install.properties
+# sed -i 's|TAG_SOURCE_ATLAS_ENABLED = true|TAG_SOURCE_ATLAS_ENABLED = false|' install.properties
+# sed -i 's|TAG_SOURCE_ATLASREST_ENABLED = false|TAG_SOURCE_ATLASREST_ENABLED = true|' install.properties
+sed -i 's|TAG_SOURCE_ATLAS_KAFKA_BOOTSTRAP_SERVERS = localhost:6667|TAG_SOURCE_ATLAS_KAFKA_BOOTSTRAP_SERVERS = kafka1:9092|' install.properties
+sed -i 's|TAG_SOURCE_ATLAS_KAFKA_ZOOKEEPER_CONNECT = localhost:2181|TAG_SOURCE_ATLAS_KAFKA_ZOOKEEPER_CONNECT = zoo1:2181|' install.properties
 
-# $RANGER_TAGSYNC_HOME/setup.sh
+$RANGER_TAGSYNC_HOME/setup.sh
 
 
 #---------------------------------------
@@ -65,12 +79,12 @@ $RANGER_ADMIN_HOME/setup.sh
 #---------------------------------------
 PATH=$PATH:$RANGER_TAGSYNC_HOME:$RANGER_ADMIN_HOME
 ranger-admin start
-# ranger-tagsync start
+ranger-tagsync start
 
 
 #---------------------------------------
 #       Keep the container running
 #---------------------------------------
-# tail -f $RANGER_ADMIN_HOME/logfile $RANGER_TAGSYNC_HOME/log/tagsync.*
-tail -f $RANGER_ADMIN_HOME/logfile
+tail -f $RANGER_ADMIN_HOME/logfile $RANGER_TAGSYNC_HOME/log/tagsync.*
+# tail -f $RANGER_ADMIN_HOME/logfile
 
