@@ -1,39 +1,68 @@
-version: "3"
+version: '3.7'
 services:
+    zookeeper:
+        image: zookeeper:3.5
+        container_name: zookeeper
+        restart: always
+        hostname: zookeeper
+        ports:
+            - 2181:2181
+        environment:
+            - ZOO_MY_ID=1
+            - ZOO_SERVERS=server.1=0.0.0.0:2888:3888;2181
+            - ZOO_4LW_COMMANDS_WHITELIST=*
+
+    solr1:
+        image: solr:8.3
+        container_name: solr1
+        ports:
+            - "8981:8983"
+        environment:
+            - ZK_HOST=zookeeper:2181
+        depends_on:
+            - zookeeper
+
+    solr2:
+        image: solr:8.3
+        container_name: solr2
+        ports:
+            - "8982:8983"
+        environment:
+            - ZK_HOST=zookeeper:2181
+        depends_on:
+            - zookeeper
+
+    solr3:
+        image: solr:8.3
+        container_name: solr3
+        ports:
+            - "8983:8983"
+        environment:
+            - ZK_HOST=zookeeper:2181
+        depends_on:
+        - zookeeper
+
+    upload_config:
+        image: solr:8.3
+        environment:
+            - ZK_HOST=zookeeper:2181
+        depends_on:
+            - zookeeper
+        volumes:
+            - "./apache-ranger/ranger_audits/:/opt/solr-8.3.1/server/solr/configsets/ranger_audits/"
+        command: bin/solr zk upconfig -n ranger_audits -d ranger_audits
+
     ranger-db:
         image: spydernaz/apache-ranger-admin-db:latest
         restart: always
         environment:
             - MYSQL_ROOT_PASSWORD=password
-        depends_on:
-            - "atlas"
+
     apache-ranger:
-        image: 7e2bab2c9a80
+        image: 0580a3b5331f
         stdin_open: true
         tty: true
         depends_on:
             - "ranger-db"
         ports:
             - "6080:6080"
-    atlas:
-        image: 15dda9c2cb48
-        ports:
-            - 21000:21000
-    zookeeper:
-        image: 'confluentinc/cp-zookeeper:5.0.0'
-        environment:
-            - ZOOKEEPER_CLIENT_PORT=2181
-            - ALLOW_ANONYMOUS_LOGIN=yes
-    kafka:
-        image: 'confluentinc/cp-kafka:5.0.0'
-        environment:
-            - KAFKA_ZOOKEEPER_CONNECT=zookeeper:2181
-            - KAFKA_ADVERTISED_LISTENERS=PLAINTEXT://:9092
-            - KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR=1
-            - KAFKA_CFG_ZOOKEEPER_CONNECT=zookeeper:2181
-            - ALLOW_PLAINTEXT_LISTENER=yes
-        depends_on:
-            - zookeeper
-
-
-

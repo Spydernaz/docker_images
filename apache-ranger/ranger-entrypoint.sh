@@ -19,27 +19,13 @@ echo -e "\n\n\n    ****    Configuring and installing Ranger Admin    ****\n\n\n
 
 # # Point logging section to Solr Container
 # sed -i 's|audit_store=solr|audit_store=none|' install.properties
-sed -i 's|audit_solr_urls=|audit_solr_urls=http://solr3:8983/solr/ranger_audits|' install.properties
+sed -i 's|audit_solr_urls=|audit_solr_urls=http://solr3:8983/solr/ranger_auditing|' install.properties
 sed -i 's|audit_solr_user=|audit_solr_user=solr|' install.properties
 sed -i 's|audit_solr_password=|audit_solr_password=NONE|' install.properties
 
 echo "Creating Solr Collection"
-curl "http://solr3:8983/solr/admin/collections?action=CREATE&name=ranger_audits&numShards=1"
+curl "http://solr1:8983/solr/admin/collections?action=CREATE&name=ranger_auditing&numShards=3&collection.configName=ranger_audits"
 # curl --negotiate -u : "${SOLR_HOST_URL}/solr/admin/collections?action=CREATE&name=${COLLECTION_NAME}&numShards=${SHARDS}&replicationFactor=${REPLICATION}&collection.configName=$CONF_NAME&maxShardsPerNode=100"
-
-
-JAVA_HOME={{JAVA_HOME}}
-SOLR_USER={{SOLR_USER}}
-SOLR_ZK={{SOLR_ZK}}
-SOLR_INSTALL_DIR={{SOLR_INSTALL_DIR}}
-SOLR_RANGER_HOME={{SOLR_RANGER_HOME}}
-
-
-SOLR_RANGER_CONFIG_NAME=ranger_audits
-SOLR_RANGER_CONFIG_LOCAL_PATH=${SOLR_RANGER_HOME}/conf
-ZK_CLI=$SOLR_INSTALL_DIR/server/scripts/cloud-scripts/zkcli.sh
-
-$ZK_CLI -cmd upconfig -zkhost $SOLR_ZK -confname $SOLR_RANGER_CONFIG_NAME -confdir $SOLR_RANGER_CONFIG_LOCAL_PATH
 
 
 # Configure DB

@@ -1,15 +1,16 @@
 version: '3.7'
 services:
-    zoo1:
+    zookeeper:
         image: zookeeper:3.5
-        container_name: zoo1
+        container_name: zookeeper
         restart: always
-        hostname: zoo1
+        hostname: zookeeper
         ports:
             - 2181:2181
         environment:
             - ZOO_MY_ID=1
             - ZOO_SERVERS=server.1=0.0.0.0:2888:3888;2181
+            - ZOO_4LW_COMMANDS_WHITELIST=*
 
     solr1:
         image: solr:8.3
@@ -17,9 +18,9 @@ services:
         ports:
             - "8981:8983"
         environment:
-            - ZK_HOST=zoo1:2181
+            - ZK_HOST=zookeeper:2181
         depends_on:
-            - zoo1
+            - zookeeper
 
     solr2:
         image: solr:8.3
@@ -27,9 +28,9 @@ services:
         ports:
             - "8982:8983"
         environment:
-            - ZK_HOST=zoo1:2181
+            - ZK_HOST=zookeeper:2181
         depends_on:
-            - zoo1
+            - zookeeper
 
     solr3:
         image: solr:8.3
@@ -37,61 +38,20 @@ services:
         ports:
             - "8983:8983"
         environment:
-            - ZK_HOST=zoo1:2181
+            - ZK_HOST=zookeeper:2181
         depends_on:
-        - zoo1
+        - zookeeper
 
-    kafka1:
-        image: confluentinc/cp-kafka:5.4.1
-        hostname: kafka1
-        ports:
-            - "9092:9092"
+    upload_config:
+        image: solr:8.3
         environment:
-            KAFKA_ADVERTISED_LISTENERS: LISTENER_DOCKER_INTERNAL://kafka1:19092,LISTENER_DOCKER_EXTERNAL://${DOCKER_HOST_IP:-127.0.0.1}:9092
-            KAFKA_LISTENER_SECURITY_PROTOCOL_MAP: LISTENER_DOCKER_INTERNAL:PLAINTEXT,LISTENER_DOCKER_EXTERNAL:PLAINTEXT
-            KAFKA_INTER_BROKER_LISTENER_NAME: LISTENER_DOCKER_INTERNAL
-            KAFKA_ZOOKEEPER_CONNECT: "zoo1:2181"
-            KAFKA_BROKER_ID: 1
-            KAFKA_LOG4J_LOGGERS: "kafka.controller=INFO,kafka.producer.async.DefaultEventHandler=INFO,state.change.logger=INFO"
-        # volumes:
-        #     - ./zk-single-kafka-multiple/kafka1/data:/var/lib/kafka/data
+            - ZK_HOST=zookeeper:2181
         depends_on:
-            - zoo1
+            - zookeeper
+        volumes:
+            - "./apache-ranger/ranger_audits/:/opt/solr-8.3.1/server/solr/configsets/ranger_audits/"
+        command: bin/solr zk upconfig -n ranger_audits -d ranger_audits
 
-    kafka2:
-        image: confluentinc/cp-kafka:5.4.1
-        hostname: kafka2
-        ports:
-            - "9093:9093"
-        environment:
-            KAFKA_ADVERTISED_LISTENERS: LISTENER_DOCKER_INTERNAL://kafka2:19093,LISTENER_DOCKER_EXTERNAL://${DOCKER_HOST_IP:-127.0.0.1}:9093
-            KAFKA_LISTENER_SECURITY_PROTOCOL_MAP: LISTENER_DOCKER_INTERNAL:PLAINTEXT,LISTENER_DOCKER_EXTERNAL:PLAINTEXT
-            KAFKA_INTER_BROKER_LISTENER_NAME: LISTENER_DOCKER_INTERNAL
-            KAFKA_ZOOKEEPER_CONNECT: "zoo1:2181"
-            KAFKA_BROKER_ID: 2
-            KAFKA_LOG4J_LOGGERS: "kafka.controller=INFO,kafka.producer.async.DefaultEventHandler=INFO,state.change.logger=INFO"
-        # volumes:
-        #     - ./zk-single-kafka-multiple/kafka2/data:/var/lib/kafka/data
-        depends_on:
-            - zoo1
-
-    kafka3:
-        image: confluentinc/cp-kafka:5.4.1
-        hostname: kafka3
-        ports:
-            - "9094:9094"
-        environment:
-            KAFKA_ADVERTISED_LISTENERS: LISTENER_DOCKER_INTERNAL://kafka3:19094,LISTENER_DOCKER_EXTERNAL://${DOCKER_HOST_IP:-127.0.0.1}:9094
-            KAFKA_LISTENER_SECURITY_PROTOCOL_MAP: LISTENER_DOCKER_INTERNAL:PLAINTEXT,LISTENER_DOCKER_EXTERNAL:PLAINTEXT
-            KAFKA_INTER_BROKER_LISTENER_NAME: LISTENER_DOCKER_INTERNAL
-            KAFKA_ZOOKEEPER_CONNECT: "zoo1:2181"
-            KAFKA_BROKER_ID: 3
-            KAFKA_LOG4J_LOGGERS: "kafka.controller=INFO,kafka.producer.async.DefaultEventHandler=INFO,state.change.logger=INFO"
-        # volumes:
-        #     - ./zk-single-kafka-multiple/kafka3/data:/var/lib/kafka/data
-        depends_on:
-            - zoo1
-    
     ranger-db:
         image: spydernaz/apache-ranger-admin-db:latest
         restart: always
@@ -99,7 +59,7 @@ services:
             - MYSQL_ROOT_PASSWORD=password
 
     apache-ranger:
-        image: 95f99e518b41
+        image: spydernaz/apache-ranger-admin:experimental
         stdin_open: true
         tty: true
         depends_on:

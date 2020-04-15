@@ -10,6 +10,7 @@ This image has a dependance on the mysql backend running and reachable. The easi
 docker-compose -f docker-compose.ranger.yml up
 ```
 
+(Note: the below commands will not enable logging as it requires SOLR)
 If you want to deploy it on your host network or without a compose file, you will still need the db. Run the following commands to test:
 
 ```sh
