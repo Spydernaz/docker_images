@@ -36,3 +36,8 @@ __Note__: Running the commands below to rebuild a new image will take a __*LONG*
 5. Run `docker build . -f Dockerfile.local`
 
 You should now have a new ImageID for the dockerfile. Update the docker-compose file with the new ImageID to test
+
+## Known Issues ##
+
+- Image not currently kerberised
+- TagSync tool not currently working in the image

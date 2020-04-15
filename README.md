@@ -14,7 +14,7 @@ Each image should have it's own documentation in the file directory of the image
 | Image Name | Version | Status |
 | ---------- |:-------:|:------:|
 | Apache Ranger | master | Passing |
-| Apache Ranger | experimental | Failing |
+| Apache Ranger | experimental | Passing |
 | Apache Atlas | master | Failing |
 | Apache Atlas | experimental | Passing |
 | Kerberos Base | master | Passing |
