@@ -4,8 +4,10 @@ echo "Builing a new instance of Apache Ranger"
 cd ranger
 
 echo "Building from source"
-mvn clean package -DskipJSTests -DskipTests assembly:assembly
-mvn eclipse:eclipse
+#mvn clean compile package -DskipJSTests -DskipTests
+#mvn eclipse:eclipse
+mvn -Pall -DskipTests=true -DskipJSTests clean compile package
+
 
 echo "Copying binaries"
 rm -rf ../binaries/*
