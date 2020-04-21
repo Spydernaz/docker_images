@@ -40,4 +40,5 @@ You should now have a new ImageID for the dockerfile. Update the docker-compose 
 ## Known Issues ##
 
 - Image not currently kerberised
-- TagSync tool not currently working in the image
+- TagSync tool not currently working in the image (appears to be a package missing?)
+- No services connected (also havent tested atlas connectivity)

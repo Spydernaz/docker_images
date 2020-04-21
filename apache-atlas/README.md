@@ -2,6 +2,8 @@
 
 This build is attempting to build Atlas Server running in a kerberized environment, eventually with TagSync flowing to a Ranger service
 
+**NOTE:** This image will take a while to start up as it has to create all the object tyoes etc, need to look at how to speed this up
+
 ## Running the Image ##
 
 This image has a dependance on an external SolrCloud. The easiest way to get Atlas running is by using a compose file. You will find one in the root directory of this repo called `docker-compose.atlas.yml` and can build it by running the following command:
@@ -28,3 +30,7 @@ __Note__: Running the commands below to rebuild a new image will take a __*LONG*
 5. Run `docker build . -f Dockerfile.local`
 
 You should now have a new ImageID for the dockerfile. Update the docker-compose file with the new ImageID to test
+
+## Known Issues ##
+
+- Slow start up speed (10 minutes +)
